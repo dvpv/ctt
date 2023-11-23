@@ -1,0 +1,43 @@
+version: "3.8"
+
+volumes:
+  db-volume:
+
+services:
+  frontend:
+    restart: always
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:1337
+    depends_on:
+      - backend
+
+  backend:
+    restart: always
+    build:
+      context: ./server
+    stop_signal: SIGINT
+    ports:
+      - "1337:1337"
+    depends_on:
+      - database
+    environment:
+      - TODO_APP_DATABASE_URI=mysql+pymysql://backend:1234ABCD@database:3306/todo
+    links:
+      - database:database
+
+  database:
+    image: mariadb:latest
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=oas#HAS(88sa9ud9*AJS(*))
+      - MYSQL_DATABASE=todo
+      - MYSQL_USER=backend
+      - MYSQL_PASSWORD=1234ABCD
+    volumes:
+      - db-volume:/var/lib/mysql
+    ports:
+      - "3306:3306"

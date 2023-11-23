@@ -25,12 +25,12 @@ class Task(db.Model):
 # Create tables if they don't exist
 with app.app_context():
     db.create_all()
+    print("Database tables created")
 
 
 # Routes
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
-    print("asdasdasd")
     tasks = Task.query.all()
     task_list = [{"id": task.id, "task": task.task} for task in tasks]
     return jsonify(task_list)
@@ -38,7 +38,6 @@ def get_tasks():
 
 @app.route("/tasks", methods=["POST"])
 def add_task():
-    print("poooost")
     data = request.get_json()
     new_task = Task(task=data["task"])
     db.session.add(new_task)
@@ -59,4 +58,4 @@ def delete_task(task_id):
 
 if __name__ == "__main__":
     # Run the server
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=1337, debug=True)
